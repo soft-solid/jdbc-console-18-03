@@ -3,7 +3,6 @@ package org.courses.DAO.hbm;
 import org.courses.DAO.DAO;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
 
 import java.util.Collection;
 
@@ -18,62 +17,29 @@ public abstract class BaseDao<TEntity, TKey> implements DAO<TEntity, TKey> {
 
     @Override
     public void save(Collection<TEntity> entity) {
-        Session session = null;
-        Transaction transaction = null;
-        try {
-            session = factory.openSession();
-            transaction = session.beginTransaction();
-            saveEntities(session, transaction, entity);
-        }
-        catch (Exception e) {
-            if (null != transaction)
-                transaction.rollback();
-            throw e;
-        }
-        finally {
-            if (null != session)
-                session.close();
-        }
+        Session session = factory.getCurrentSession();
+        saveEntities(session, entity);
     }
 
-    private void saveEntities(Session session, Transaction transaction, Collection<TEntity> entities) {
+    private void saveEntities(Session session, Collection<TEntity> entities) {
         for (TEntity entity : entities) {
-            session.saveOrUpdate(entity);
+            session.save(entity);
         }
-        transaction.commit();
     }
 
     @Override
     public TEntity read(TKey id) {
-        TEntity result = null;
-        Session session = null;
-        try {
-            session = factory.openSession();
-            result = session.find(entityType, id);
-        }
-        finally {
-            if (null != session)
-                session.close();
-        }
-        return result;
+        Session session = factory.getCurrentSession();
+        return session.find(entityType, id);
     }
 
     @Override
     public Collection<TEntity> readAll() {
-        Collection<TEntity> result = null;
-        Session session = null;
-        try {
-            String query = String.format("from %s", entityType.getName());
-            session = factory.openSession();
-            result = session
-                    .createQuery(query)
-                    .list();
-        }
-        finally {
-            if (null != session)
-                session.close();
-        }
-        return result;
+        String query = String.format("from %s", entityType.getName());
+        Session session = factory.getCurrentSession();
+        return session
+                .createQuery(query)
+                .list();
     }
 
     @Override
@@ -81,24 +47,8 @@ public abstract class BaseDao<TEntity, TKey> implements DAO<TEntity, TKey> {
 
     @Override
     public void delete(TKey id) {
-        Session session = null;
-        Transaction transaction = null;
-        try {
-            session = factory.openSession();
-            transaction = session.beginTransaction();
-            TEntity entity = session.find(entityType, id);
-            session.delete(entity);
-            transaction.commit();
-        }
-        catch (Exception e) {
-            if (null != transaction)
-                transaction.rollback();
-            throw e;
-        }
-        finally {
-            if (null != session)
-                session.close();
-        }
-
+        Session session = factory.getCurrentSession();
+        TEntity entity = session.find(entityType, id);
+        session.delete(entity);
     }
 }

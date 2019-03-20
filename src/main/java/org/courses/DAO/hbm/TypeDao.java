@@ -16,22 +16,13 @@ public class TypeDao extends BaseDao<Type, Integer> {
 
     @Override
     public Collection<Type> find(String filter) {
-        Collection<Type> result = null;
-        Session session = null;
-        try {
-            session = factory.openSession();
-            result = session
-                    .createQuery("from Type " +
-                            "where id = :id " +
-                            "or name like :filter")
-                    .setParameter("id", Int32.validate(filter))
-                    .setParameter("filter", String.format("%%%s%%", filter))
-                    .list();
-        }
-        finally {
-            if (null != session)
-                session.close();
-        }
-        return result;
+        Session session = factory.openSession();
+        return session
+                .createQuery("from Type " +
+                        "where id = :id " +
+                        "or name like :filter")
+                .setParameter("id", Int32.validate(filter))
+                .setParameter("filter", String.format("%%%s%%", filter))
+                .list();
     }
 }

@@ -3,6 +3,7 @@ package org.courses.commands.jdbc;
 import org.courses.DAO.DAO;
 import org.courses.commands.Command;
 import org.courses.commands.CommandFormatException;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 
@@ -22,8 +23,7 @@ public abstract class CrudCommand<TEntity, TKey> implements Command {
     public void parse(String[] args) {
         if (args.length > 0) {
             verb = args[0];
-        }
-        else {
+        } else {
             throw new CommandFormatException("Entity action is not specified");
         }
 
@@ -31,6 +31,7 @@ public abstract class CrudCommand<TEntity, TKey> implements Command {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void execute() {
         if ("add".equals(verb))
             add();
@@ -46,11 +47,9 @@ public abstract class CrudCommand<TEntity, TKey> implements Command {
         TEntity entity = null;
         try {
             entity = entityType.newInstance();
-        }
-        catch (IllegalAccessException e) {
+        } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
-        }
-        catch (InstantiationException e) {
+        } catch (InstantiationException e) {
             throw new RuntimeException(e);
         }
 
@@ -63,18 +62,17 @@ public abstract class CrudCommand<TEntity, TKey> implements Command {
         String id;
         if (args.length > 1) {
             id = args[1];
-        }
-        else {
+        } else {
             throw new CommandFormatException("ID to delete is not specified");
         }
         try {
             delete(id);
-        }
-        catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             throw new CommandFormatException("Entity is not found with current ID.");
         }
 
     }
+
     protected void delete(String id) {
         TKey i = convertId(id);
         dao.delete(i);
@@ -84,14 +82,12 @@ public abstract class CrudCommand<TEntity, TKey> implements Command {
         String id;
         if (args.length > 1) {
             id = args[1];
-        }
-        else {
+        } else {
             throw new CommandFormatException("ID to update is not specified");
         }
         try {
             update(id);
-        }
-        catch (NullPointerException e){
+        } catch (NullPointerException e) {
             throw new CommandFormatException("Entity is not found with current ID.");
         }
     }
@@ -112,8 +108,7 @@ public abstract class CrudCommand<TEntity, TKey> implements Command {
         if (args.length > 1) {
             filter = args[1];
             list(filter);
-        }
-        else {
+        } else {
             listAll();
         }
     }

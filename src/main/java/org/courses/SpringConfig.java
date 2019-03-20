@@ -12,10 +12,12 @@ import org.courses.commands.jdbc.TypeCommand;
 import org.courses.domain.hbm.*;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.context.annotation.*;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.orm.hibernate5.HibernateTransactionManager;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.sql.DataSource;
 import java.util.HashMap;
@@ -24,6 +26,7 @@ import java.util.Properties;
 import java.util.Scanner;
 
 @Configuration
+@EnableTransactionManagement(proxyTargetClass = true)
 public class SpringConfig {
     private final Properties hibernateProperties() {
         Properties hibernateProperties = new Properties();
@@ -34,6 +37,11 @@ public class SpringConfig {
         hibernateProperties.setProperty("hibernate.jdbc.batch_size", "30");
 
         return hibernateProperties;
+    }
+
+    @Bean
+    public PlatformTransactionManager transactionManager() {
+        return new HibernateTransactionManager(sessionFactory);
     }
 
     @Bean
@@ -97,10 +105,14 @@ public class SpringConfig {
     }
 
     @Bean
-    public CrudCommand<Type, Integer> typeCommand() { return new TypeCommand(typeDao(), scanner()); }
+    public CrudCommand<Type, Integer> typeCommand() {
+        return new TypeCommand(typeDao(), scanner());
+    }
 
     @Bean
-    public CrudCommand<Manufacture, Integer> manufactureCommand() { return new ManufactureCommand(manufactureDao(), scanner()); }
+    public CrudCommand<Manufacture, Integer> manufactureCommand() {
+        return new ManufactureCommand(manufactureDao(), scanner());
+    }
 
     @Bean
     public Map<String, Command> commands() {
