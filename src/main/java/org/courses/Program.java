@@ -47,7 +47,7 @@ public class Program {
             executeCommand(commandName, params);
         }
         catch (CommandFormatException e) {
-            System.out.println(String.format("%s has some invalid arguments", commandName));
+            System.out.println(String.format("%s has some invalid arguments.\n%s", commandName, e.getMessage()));
         }
         catch (NotImplementedException e) {
             System.out.println(String.format("Unknown command %s", commandName));

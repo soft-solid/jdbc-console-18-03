@@ -67,9 +67,14 @@ public abstract class CrudCommand<TEntity, TKey> implements Command {
         else {
             throw new CommandFormatException("ID to delete is not specified");
         }
-        delete(id);
-    }
+        try {
+            delete(id);
+        }
+        catch (IllegalArgumentException e){
+            throw new CommandFormatException("Entity is not found with current ID.");
+        }
 
+    }
     protected void delete(String id) {
         TKey i = convertId(id);
         dao.delete(i);
@@ -83,7 +88,12 @@ public abstract class CrudCommand<TEntity, TKey> implements Command {
         else {
             throw new CommandFormatException("ID to update is not specified");
         }
-        update(id);
+        try {
+            update(id);
+        }
+        catch (NullPointerException e){
+            throw new CommandFormatException("Entity is not found with current ID.");
+        }
     }
 
     protected void update(String id) {
