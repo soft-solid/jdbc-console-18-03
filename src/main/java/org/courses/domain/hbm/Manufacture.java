@@ -28,4 +28,9 @@ public class Manufacture {
     public void setName(String name) {
         this.name = name;
     }
+
+    @Override
+    public String toString(){
+        return String.format("Manufacture { id: %d, name: %s }", id, name);
+    }
 }

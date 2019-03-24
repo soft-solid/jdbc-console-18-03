@@ -26,7 +26,6 @@ public abstract class CrudCommand<TEntity, TKey> implements Command {
         } else {
             throw new CommandFormatException("Entity action is not specified");
         }
-
         this.args = args;
     }
 

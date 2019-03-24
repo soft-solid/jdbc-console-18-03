@@ -1,14 +1,9 @@
 package org.courses;
 
 import org.courses.DAO.DAO;
-import org.courses.DAO.hbm.ManufactureDao;
-import org.courses.DAO.hbm.MaterialDao;
-import org.courses.DAO.hbm.TypeDao;
+import org.courses.DAO.hbm.*;
 import org.courses.commands.Command;
-import org.courses.commands.jdbc.CrudCommand;
-import org.courses.commands.jdbc.ManufactureCommand;
-import org.courses.commands.jdbc.MaterialCommand;
-import org.courses.commands.jdbc.TypeCommand;
+import org.courses.commands.jdbc.*;
 import org.courses.domain.hbm.*;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +43,7 @@ public class SpringConfig {
     public DriverManagerDataSource configurableDataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName("org.sqlite.JDBC");
-        dataSource.setUrl("jdbc:sqlite:D:\\1dotNet\\Projects\\JdbcConcole 18 03\\CourseDB.db");
+        dataSource.setUrl("jdbc:sqlite:D:\\1dotNet\\Projects\\DBCourses.db");
         return dataSource;
     }
 
@@ -93,6 +88,13 @@ public class SpringConfig {
     public DAO<Manufacture, Integer> manufactureDao() {
         return new ManufactureDao(sessionFactory);
     }
+    @Bean
+    public DAO<Socks, Integer> socksDao() {
+        return new SocksDao(sessionFactory);
+    }
+
+    @Bean
+    public DAO<Composition, Integer> compositionDao() { return new CompositionDao(sessionFactory); }
 
     @Bean
     public Scanner scanner() {
@@ -115,12 +117,19 @@ public class SpringConfig {
     }
 
     @Bean
+    public CrudCommand<Socks, Integer> socksCommand() {
+        return new SocksCommand(socksDao(), typeDao(), materialDao(), manufactureDao(), compositionDao(), scanner());
+    }
+
+
+    @Bean
     public Map<String, Command> commands() {
         Map<String, Command> commands = new HashMap<>();
 
         commands.put("material", materialCommand());
         commands.put("type", typeCommand());
         commands.put("manufacture", manufactureCommand());
+        commands.put("socks", socksCommand());
 
         return commands;
     }

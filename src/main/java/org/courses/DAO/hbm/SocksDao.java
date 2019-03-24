@@ -10,12 +10,18 @@ import java.util.Collection;
 public class SocksDao extends BaseDao<Socks, Integer> {
     private IntegerValidator Int32 = IntegerValidator.getInstance();
 
+
     public SocksDao(SessionFactory factory) {
         super(factory, Socks.class);
     }
 
     @Override
     public Collection<Socks> find(String filter) {
-        return null;
+        Session session = factory.openSession();
+        return session
+                .createQuery("from Socks " +
+                        "where id = :id ")
+                .setParameter("id", Int32.validate(filter))
+                .list();
     }
 }
