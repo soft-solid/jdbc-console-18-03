@@ -3,6 +3,7 @@ package org.courses.DAO.hbm;
 import org.courses.DAO.DAO;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 
 import java.util.Collection;
 
@@ -23,7 +24,7 @@ public abstract class BaseDao<TEntity, TKey> implements DAO<TEntity, TKey> {
 
     private void saveEntities(Session session, Collection<TEntity> entities) {
         for (TEntity entity : entities) {
-            session.save(entity);
+            session.saveOrUpdate(entity);
         }
     }
 
@@ -46,9 +47,31 @@ public abstract class BaseDao<TEntity, TKey> implements DAO<TEntity, TKey> {
     public abstract Collection<TEntity> find(String filter);
 
     @Override
-    public void delete(TKey id) {
+    public void delete(Collection<TEntity> entitys) {
         Session session = factory.getCurrentSession();
-        TEntity entity = session.find(entityType, id);
-        session.delete(entity);
+        deleteEntities(session,entitys);
+        //Transaction transaction = null;
+//        try {
+////            session = factory.openSession();
+////            transaction = session.beginTransaction();
+//
+//        }
+//        catch (Exception e){
+////            if (null != transaction)
+////                transaction.rollback();
+//            throw e;
+//        }
+////        finally {
+////            if (null != session)
+////                session.close();
+////        }
     }
+
+    private void deleteEntities(Session session, Collection<TEntity> entities) {
+        for (TEntity type : entities) {
+            session.delete(type);
+        }
+    }
+
+
 }

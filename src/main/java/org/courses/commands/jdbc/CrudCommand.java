@@ -5,6 +5,7 @@ import org.courses.commands.Command;
 import org.courses.commands.CommandFormatException;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 public abstract class CrudCommand<TEntity, TKey> implements Command {
@@ -58,23 +59,29 @@ public abstract class CrudCommand<TEntity, TKey> implements Command {
     }
 
     public void delete() {
-        String id;
+        String[] idArray;
         if (args.length > 1) {
-            id = args[1];
+            idArray = new String[args.length - 1];
+            System.arraycopy(args, 1, idArray, 0, idArray.length);
         } else {
             throw new CommandFormatException("ID to delete is not specified");
         }
         try {
-            delete(id);
+            delete(idArray);
         } catch (IllegalArgumentException e) {
             throw new CommandFormatException("Entity is not found with current ID.");
         }
 
     }
 
-    protected void delete(String id) {
-        TKey i = convertId(id);
-        dao.delete(i);
+    protected void delete(String[] idArray) {
+        ArrayList<TEntity> collection = new ArrayList<TEntity>(idArray.length);
+        for(String id : idArray){
+            TKey i = convertId(id);
+            TEntity entity = dao.read(i);
+            collection.add(entity);
+        }
+        dao.delete(collection);
     }
 
     public void update() {
