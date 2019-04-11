@@ -60,45 +60,11 @@ public class SocksCommand extends CrudCommand<Socks, Integer> {
         }
 
         List<Composition> compositionList = socks.getComposition();
-        //List<Composition> newCompositionList = compositionList.subList(0,1);
-        //compositionList.remove(1);
 
-//        Composition c = compositionList.get(1);
-        //compositionList.remove(i);
-//        compositionDao.delete(c.getId());
-//        System.out.println("\tcomposition: ");
-//        int percentage = 0;
-//
-//
-        ///
         if (compositionList.isEmpty())
             CompositionInsert(socks);
         else
             CompositionUpdate(compositionList, socks);
-
-//        Composition c;
-//        int i = 0;
-//        while (percentage < 100) {
-//            if (compositionList.isEmpty())
-//                c = new Composition();
-//            else
-//                c = compositionList.get(i);
-//
-//            System.out.print("\tmaterial: ");
-//            if (scanner.hasNext()) {
-//                int id = scanner.nextInt();
-//                c.setMaterial(materialDao.read(id));
-//            }
-//            System.out.print("\tpercantage: ");
-//            if (scanner.hasNext()) {
-//                int percents = scanner.nextInt();
-//                c.setPercentage(percents);
-//                percentage += percents;
-//                i++;
-//            }
-//
-//            socks.add(c);
-
     }
 
     private void CompositionUpdate(List<Composition> compositionList, Socks socks){
@@ -127,13 +93,11 @@ public class SocksCommand extends CrudCommand<Socks, Integer> {
                 c.setPercentage(percents);
                 percentage += percents;
             }
-            //compositionDao.save(Arrays.asList(c));
             i++;
         }
         if (compositionCount > i){
             List<Composition> toDelete = compositionList.subList(i,compositionCount);
             List<Composition> toDel = new ArrayList<Composition>(toDelete);
-            //Collections.copy(toDel, toDelete);
 
             compositionList.removeAll(toDelete);
             dao.save(Arrays.asList(socks));
@@ -142,15 +106,6 @@ public class SocksCommand extends CrudCommand<Socks, Integer> {
         else {
             dao.save(Arrays.asList(socks));
         }
-//        if (compositionCount > i) {
-//            for (; i < compositionCount;i++)
-//            {
-//                compositionList.remove(i);
-//
-//                c = compositionList.get(i);
-//                compositionDao.delete(c.getId());
-//            }
-//        }
     }
 
     private void CompositionInsert(Socks socks){
